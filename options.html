@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>Video Sniffer · 设置</title>
+  <style>
+    :root { --primary:#4f46e5; --line:#e5e8f0; --muted:#78819a; --bg:#f6f7fb; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:#1c2130; font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; }
+    .wrap { max-width:860px; margin:0 auto; padding:28px 22px 60px; }
+    h1 { font-size:22px; margin:0 0 4px; }
+    .lead { color:var(--muted); font-size:13px; margin-bottom:22px; }
+    h2 { font-size:14px; margin:26px 0 10px; color:#3a4055; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin-bottom:12px; }
+    .card-head { display:flex; align-items:center; gap:10px; }
+    .card-head .name { font-weight:650; flex:1; }
+    .card-head .desc { font-size:12px; color:var(--muted); font-weight:400; }
+    .switch { position:relative; width:40px; height:22px; flex:none; }
+    .switch input { opacity:0; width:0; height:0; }
+    .slider { position:absolute; inset:0; background:#d7dbe7; border-radius:22px; cursor:pointer; transition:.2s; }
+    .slider:before { content:""; position:absolute; width:16px; height:16px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; }
+    .switch input:checked + .slider { background:var(--primary); }
+    .switch input:checked + .slider:before { transform:translateX(18px); }
+    .body { margin-top:14px; border-top:1px dashed var(--line); padding-top:13px; }
+    .body.off { display:none; }
+    label.f { display:block; font-size:12px; color:#586078; margin:10px 0 4px; }
+    input[type=text], input[type=number], select, textarea {
+      width:100%; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font:13px/1.5 inherit; color:#1c2130; background:#fbfcff; outline:none;
+    }
+    input:focus, textarea:focus { border-color:var(--primary); background:#fff; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .tip { font-size:11.5px; color:var(--muted); margin-top:6px; }
+    .btn { border:1px solid var(--line); background:#fff; border-radius:8px; padding:8px 14px; cursor:pointer; font-size:13px; color:#333; }
+    .btn:hover { border-color:var(--primary); color:var(--primary); }
+    .btn.primary { background:var(--primary); color:#fff; border-color:var(--primary); font-weight:600; }
+    .btn.primary:hover { background:#4338ca; color:#fff; }
+    .bar { display:flex; gap:10px; align-items:center; margin-top:24px; }
+    #msg { font-size:12.5px; color:var(--muted); }
+    #msg.ok { color:#0f9d6e; } #msg.err { color:#dc4b4b; }
+    code { background:#eef0f6; padding:2px 6px; border-radius:4px; font-size:12px; }
+    pre { background:#1f2333; color:#e6e9f5; padding:12px 14px; border-radius:8px; overflow-x:auto; font-size:12px; line-height:1.7; }
+    .warn { background:#fff8e8; color:#96681c; border-radius:8px; padding:10px 12px; font-size:12px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Video Sniffer · 设置</h1>
+  <div class="lead">解析按「内置直连 → RC 全平台 → 自定义 API → Cobalt → 本地 yt-dlp」依次降级，上一步失败自动走下一步。关闭的通道会被跳过。</div>
+
+  <h2>解析通道</h2>
+
+  <div class="card">
+    <div class="card-head">
+      <label class="switch"><input type="checkbox" id="useBuiltin"><span class="slider"></span></label>
+      <div class="name">内置直连解析器 <span class="desc">X / 抖音 / B站 / 微博 / 通用网页嗅探 · 不经过第三方服务器</span></div>
+    </div>
+    <div class="body" id="body-builtin">
+      <div class="tip">X 使用开源 fxTwitter / vxTwitter 只读 API；抖音使用官方分享页数据并把 <code>playwm</code> 换成 <code>play</code> 取无水印流；B站/微博使用各自公开接口。这些接口可能随平台改版失效，所以下面几条兜底通道很重要。</div>
+      <button class="btn" id="testBuiltin">测试内置解析（用一个公开链接）</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <label class="switch"><input type="checkbox" id="useRcuts"><span class="slider"></span></label>
+      <div class="name">RC 全平台解析 <span class="desc">与本机「抖音解析 无水印」快捷指令同源 · 开箱即用</span></div>
+    </div>
+    <div class="body" id="body-rcuts">
+      <div class="tip">从本机快捷指令中实测提取：先读取配置端点拿到 <code>parse</code> 地址，再 POST <code>{"url":…,"sv":"1","client":"ios-shortcut-247","quality":"all"}</code>。实测 B 站链接返回 <code>code:0</code>，含画质标签与 CDN 防盗链请求头（Referer）。配置端点可动态换域名，插件会自动跟随。</div>
+      <div class="grid">
+        <div>
+          <label class="f">配置端点（动态下发解析地址）</label>
+          <input type="text" id="rcutsConfig" placeholder="https://i.rcuts.com/update/247">
+        </div>
+        <div>
+          <label class="f">client 标识</label>
+          <input type="text" id="rcutsClient" placeholder="ios-shortcut-247">
+        </div>
+      </div>
+      <div class="warn" style="margin-top:10px">⚠️ 启用后，内置解析失败的链接会被发送给第三方服务 <code>parse.rcuts.com</code>（与快捷指令行为一致）。不想让链接离开本机就关掉此开关，改用「自定义解析 API」或本地 yt-dlp。</div>
+      <div style="margin-top:10px"><button class="btn" id="testRcuts">测试通道（公开 B 站链接）</button></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <label class="switch"><input type="checkbox" id="useCustom"><span class="slider"></span></label>
+      <div class="name">自定义解析 API <span class="desc">把 iOS 快捷指令里用的那个接口直接搬过来</span></div>
+    </div>
+    <div class="body" id="body-custom">
+      <label class="f">接口地址（用 {url} 作为链接占位符）</label>
+      <input type="text" id="customApi" placeholder="https://your-api.com/parse?url={url}">
+      <div class="grid">
+        <div>
+          <label class="f">请求方式</label>
+          <select id="customMethod"><option>GET</option><option>POST</option></select>
+        </div>
+        <div>
+          <label class="f">POST 请求体（可留空）</label>
+          <input type="text" id="customBody" placeholder='{"url":"{url}"}'>
+        </div>
+      </div>
+      <div class="tip">插件会自动递归扫描返回的 JSON，找出所有 mp4 / m3u8 / CDN 视频地址；纯文本直链也支持。适合各种"短视频去水印"公共接口和你自己部署的服务。</div>
+      <button class="btn" id="testCustom">测试接口</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <label class="switch"><input type="checkbox" id="useCobalt"><span class="slider"></span></label>
+      <div class="name">Cobalt 实例 <span class="desc">开源通用解析后端，覆盖 YouTube / TikTok / Instagram / Reddit 等</span></div>
+    </div>
+    <div class="body" id="body-cobalt">
+      <div class="grid">
+        <div>
+          <label class="f">实例地址</label>
+          <input type="text" id="cobaltUrl" placeholder="http://localhost:9000">
+        </div>
+        <div>
+          <label class="f">画质</label>
+          <select id="cobaltQuality">
+            <option>144</option><option>360</option><option>480</option><option>720</option>
+            <option selected>1080</option><option>1440</option><option>2160</option><option>max</option>
+          </select>
+        </div>
+      </div>
+      <div class="warn" style="margin-top:10px">⚠️ 官方公共实例 <code>api.cobalt.tools</code> 已启用 JWT 授权，第三方调用会被拒绝（实测返回 <code>error.api.auth.jwt.missing</code>）。请自建实例（Docker 一条命令）或使用社区允许的实例，再填入地址。</div>
+      <div style="margin-top:10px"><button class="btn" id="testCobalt">测试实例</button></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <label class="switch"><input type="checkbox" id="useYtdlp"><span class="slider"></span></label>
+      <div class="name">本机桥接 / yt-dlp <span class="desc">注册一次即可启用「本机原生下载」；yt-dlp 仅用于合并高分音视频</span></div>
+    </div>
+    <div class="body" id="body-ytdlp">
+      <div class="tip"><b>只需一步</b>：在终端进入本插件的 <code>bridge</code> 目录，执行下面命令注册桥接（扩展 ID 已自动带入）。<b>本机原生下载不要求安装 yt-dlp</b>，系统自带 Python 3 即可。<br>
+      只有需要「yt-dlp 合并 / 1000+ 站点解析」时才装：<code>brew install yt-dlp ffmpeg</code> 或 <code>pip3 install -U yt-dlp</code>。</div>
+      <pre id="installCmd">bash install.sh &lt;扩展ID&gt;</pre>
+      <div class="tip">本扩展 ID：<code id="extId">-</code> <button class="btn" id="copyId" style="padding:3px 10px">复制</button></div>
+      <div class="bar" style="margin-top:12px">
+        <button class="btn" id="grantPerm">① 授予本地通信权限</button>
+        <button class="btn" id="testYtdlp">② 测试本机桥接</button>
+      </div>
+      <div class="tip">注册后如果移动了插件目录，需要重新运行 install.sh。脚本会一次写好 macOS 上常见 Chromium 浏览器（Chrome / Edge / Brave / Vivaldi / Arc 等）的 Host 目录，无需挑选。</div>
+    </div>
+  </div>
+
+  <h2>下载行为</h2>
+  <div class="card">
+    <div style="margin-bottom:14px;padding:11px 13px;background:#f1f4ff;border-radius:8px;font-size:13px;line-height:1.75">
+      <label class="switch" style="display:inline-block;vertical-align:middle"><input type="checkbox" id="useNativeDownload"><span class="slider"></span></label>
+      <strong style="margin-left:8px">本机原生下载（推荐，解决视频 CDN 防盗链）</strong><br>
+      授权本地通信并注册桥接后，直链会连同解析服务给的完整请求头（含 <code>User-Agent</code> / <code>Referer</code>）交给本机 Python 下载 —— 这正是快捷指令能下载成功的原因。浏览器扩展<b>无法设置 User-Agent</b>（Chrome 安全限制），所以视频直链常被 CDN 拒成 403 网页。音频一般不受影响，因此会出现「音频能下、视频不能下」。开启后不需要安装 yt-dlp。
+    </div>
+    <div class="grid">
+      <div>
+        <label class="f">下载子目录（相对「下载」文件夹）</label>
+        <input type="text" id="downloadDir" placeholder="VideoSniffer">
+      </div>
+      <div>
+        <label class="f">历史记录条数</label>
+        <input type="number" id="historyLimit" min="0" max="100">
+      </div>
+    </div>
+    <div style="margin-top:10px">
+      <label class="switch" style="display:inline-block;vertical-align:middle"><input type="checkbox" id="quickDownload"><span class="slider"></span></label>
+      <span style="font-size:13px;margin-left:8px">右键 / Alt+D 解析成功后自动下载推荐画质</span>
+    </div>
+    <div style="margin-top:8px">
+      <label class="switch" style="display:inline-block;vertical-align:middle"><input type="checkbox" id="autoPaste"><span class="slider"></span></label>
+      <span style="font-size:13px;margin-left:8px">打开面板时自动读取剪贴板里的链接并解析</span>
+    </div>
+    <div class="tip" style="margin-top:10px">手动在面板里点「解析」时永远只展示画质列表，不会自动下载。</div>
+  </div>
+
+  <div class="bar">
+    <button class="btn primary" id="saveBtn">保存设置</button>
+    <span id="msg"></span>
+  </div>
+
+  <h2>说明</h2>
+  <div class="card">
+    <div class="tip">
+      · 插件需要「读取和更改所有网站数据」权限，才能在后台请求任意解析接口与视频 CDN（网页做不到，扩展可以）。所有解析都发生在你自己的浏览器里，插件不上传任何数据到我们的服务器——本项目没有服务器。<br>
+      · 但「RC 全平台解析」「自定义解析 API」这类第三方通道会把你提交的链接发送给对应服务；默认只开启 RC 通道（与本机快捷指令同源），可在上方一键关闭。内置直连与本地 yt-dlp 不经过第三方解析服务。<br>
+      · 公共解析接口随时可能限流、加鉴权或关停；长期稳定使用建议自建 Cobalt 或装 yt-dlp。<br>
+      · 请仅下载你有权利保存的内容，遵守各平台服务条款与著作权规定，勿用于搬运、二次分发或商业用途。
+    </div>
+  </div>
+</div>
+<script src="options.js"></script>
+</body>
+</html>

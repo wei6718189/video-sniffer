@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 构建 / 打包产物（源码即扩展本体，可直接在 chrome://extensions 加载）
+*.zip
+*.crx
+*.pem
+
+# 编辑器 / IDE
+.idea/
+.vscode/
+*.swp
+
+# WorkBuddy 工作区元数据（本地工作日志，不进公开仓库）
+.workbuddy/
+
+# 日志与临时文件
+*.log
+*.tmp

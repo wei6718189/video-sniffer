@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="popup.css">
+  <title>Video Sniffer</title>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="icons/icon48.png" alt="">
+      <div>
+        <div class="title">Video Sniffer</div>
+        <div class="sub">粘贴链接 · 解析 · 下载</div>
+      </div>
+    </div>
+    <button id="settingsBtn" class="icon-btn" title="设置">⚙</button>
+  </header>
+
+  <main>
+    <section class="input-card">
+      <div class="input-wrap">
+        <textarea id="urlInput" rows="2" placeholder="粘贴视频/分享链接，支持带文案的整段分享文本…" spellcheck="false"></textarea>
+        <button id="clearInputBtn" class="clear-input" title="清空解析内容" hidden>✕</button>
+      </div>
+      <div class="row">
+        <button id="pasteBtn" class="btn ghost">📋 粘贴剪贴板</button>
+        <button id="grabBtn" class="btn ghost" title="从当前页面查找视频直链">🔍 嗅探页面</button>
+        <button id="parseBtn" class="btn primary">解析</button>
+      </div>
+      <div id="hint" class="hint">右键点击链接，或按 <kbd>Alt</kbd>+<kbd>D</kbd> 可直接解析当前页面并下载。</div>
+    </section>
+
+    <div id="status" class="status" hidden></div>
+    <div id="trace" class="trace" hidden></div>
+
+    <section id="result" class="result" hidden>
+      <div class="result-head">
+        <img id="cover" src="" alt="" class="cover">
+        <div class="result-meta">
+          <div id="rTitle" class="r-title"></div>
+          <div id="rAuthor" class="r-author"></div>
+          <span id="rSource" class="badge"></span>
+        </div>
+      </div>
+      <div id="rNotes" class="notes"></div>
+      <div class="section-label">可用画质 / 直链</div>
+      <div id="formatList" class="format-list"></div>
+      <div id="extraWrap" class="extra-wrap" hidden>
+        <div class="section-label">图片 / 其它素材</div>
+        <div id="extraList" class="format-list"></div>
+      </div>
+    </section>
+
+    <section id="historyWrap" class="history" hidden>
+      <div class="section-label">最近下载</div>
+      <div id="historyList"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>仅用于下载你有权保存的内容 · v1.3.0</span>
+    <button id="clearBtn" class="link-btn" title="一键清空下方「最近下载」列表里的全部记录">清空下载列表</button>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
